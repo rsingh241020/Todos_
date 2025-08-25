@@ -12,7 +12,10 @@ router.get('/', auth, myTodos);
 router.post(
   '/',
   auth,
-  [body('task').notEmpty().withMessage('Task is required'), body('dueDate').optional().isISO8601()],
+  [
+    body('task').notEmpty().withMessage('Task is required'),
+    body('dueDate').optional().isISO8601()
+  ],
   addTodo
 );
 

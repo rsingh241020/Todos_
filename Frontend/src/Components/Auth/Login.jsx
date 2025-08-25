@@ -16,19 +16,33 @@ const TaskLogin = () => {
     e.preventDefault();
 
     try {
+      console.log("Attempting login with email:", email); // Debug: Login attempt
       const res = await API.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
+      console.log("Full response from API:", res.data); // Debug: Full response
 
-      const role = res.data.user.role;
+      localStorage.setItem("token", res.data.token);
+      console.log("Token saved to localStorage:", res.data.token); // Debug: Token
+
+      const roleRaw = res.data?.user?.role;
+      const role = String(roleRaw || '').toLowerCase();
+      console.log("Raw role from response:", roleRaw); // Debug: Raw role
+      console.log("Processed role:", role); // Debug: Processed role
+
+      localStorage.setItem("role", role);
+      console.log("Role saved to localStorage:", localStorage.getItem("role")); // Debug: Saved role
+
       if (role === "admin") {
+        console.log("Navigating to /dashboard for admin"); // Debug: Navigation
         navigate("/dashboard");
       } else if (role === "manager") {
+        console.log("Navigating to /manager-dashboard for manager"); // Debug: Navigation
         navigate("/manager-dashboard");
       } else {
+        console.log("Navigating to /user-dashboard for other roles"); // Debug: Navigation
         navigate("/user-dashboard");
       }
     } catch (err) {
-      console.error("Login failed:", err.response?.data || err.message);
+      console.error("Login failed:", err.response?.data || err.message); // Debug: Error
       alert(err.response?.data?.message || "Login failed");
     }
   };

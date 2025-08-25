@@ -25,29 +25,35 @@ export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // check if user exists
+    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // create user (password will be hashed automatically in User model pre-save hook)
+    // Validate role
+    const validRole = role ? role.toLowerCase() : "user";
+    if (!['admin', 'manager', 'user'].includes(validRole)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+    // Create user
     const user = new User({
       name,
       email,
-      password, // plain password, model will hash
-      role: role || "user",
+      password,
+      role: validRole
     });
 
     await user.save();
 
-    // generate JWT
+    // Generate JWT
     const token = signToken(user);
 
     res.status(201).json({
       message: "User registered successfully",
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
   } catch (err) {
     console.error(err);
