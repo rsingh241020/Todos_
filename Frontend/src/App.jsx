@@ -1,9 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./Common/Layout";
 import Login from "./Components/Auth/Login";
- import Dashboard from "./Components/Dashboard/Dashboard";
- import Employee from "./Components/Employement/Employee";
- import Task from "./Components/Dashboard/Task";
+import Dashboard from "./Components/Dashboard/Dashboard";
+import Employee from "./Components/Employement/Employee";
+import Task from "./Components/Dashboard/Task";
+import Register from "./Components/Auth/register";
+
 // import Profile from "./Pages/Profile";
 
 function App() {
@@ -12,7 +14,7 @@ function App() {
       <Routes>
         {/* Public Route */}
         <Route path="/" element={<Login />} />
-
+        <Route path="/register" element={<Register />} /> 
         {/* Protected Routes inside Layout */}
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />

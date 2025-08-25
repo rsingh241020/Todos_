@@ -1,35 +1,27 @@
-import React, { useState } from 'react';
-import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
-import { FaGoogle, FaFacebook } from 'react-icons/fa';
+import React, { useState } from "react";
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import API from "../../api";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const TaskLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+const TaskRegister = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [role, setRole] = useState("user"); // Default role
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await API.post("/auth/login", { email, password });
+      const res = await API.post("/auth/register", { name, email, password });
       localStorage.setItem("token", res.data.token);
-
-      const role = res.data.user.role;
-      if (role === "admin") {
-        navigate("/dashboard");
-      } else if (role === "manager") {
-        navigate("/manager-dashboard");
-      } else {
-        navigate("/user-dashboard");
-      }
+      alert("Registration successful!");
+      navigate("/"); // login page pe redirect
     } catch (err) {
-      console.error("Login failed:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Login failed");
+      console.error("Register failed:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Register failed");
     }
   };
 
@@ -46,23 +38,41 @@ const TaskLogin = () => {
         </div>
       </div>
 
-      {/* Login Card */}
+      {/* Register Card */}
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-xl shadow-xl p-8">
-            
             {/* Header */}
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-              <p className="text-gray-600">Sign in to your account to continue</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+              <p className="text-gray-600">Sign up to get started</p>
             </div>
 
-            {/* Login Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              
-              {/* Email Field */}
+            {/* Register Form */}
+            <form onSubmit={handleRegister} className="space-y-6">
+              {/* Name */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiUser className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter your name"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
                 </label>
                 <div className="relative">
@@ -71,7 +81,6 @@ const TaskLogin = () => {
                   </div>
                   <input
                     type="email"
-                    id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
@@ -81,9 +90,9 @@ const TaskLogin = () => {
                 </div>
               </div>
 
-              {/* Password Field */}
+              {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Password
                 </label>
                 <div className="relative">
@@ -91,8 +100,7 @@ const TaskLogin = () => {
                     <FiLock className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
@@ -113,55 +121,37 @@ const TaskLogin = () => {
                 </div>
               </div>
 
-              {/* Remember Me */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                    Remember me
-                  </label>
-                </div>
-                <a href="#" className="text-sm text-blue-600 hover:text-blue-500 font-medium">
-                  Forgot password?
-                </a>
-              </div>
 
-              {/* Sign In Button */}
+               {/* Role Select */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Role
+                </label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="admin">Admin</option>
+                  <option value="manager">Manager</option>
+                  <option value="user">User</option>
+                </select>
+              </div>
+                   
+              {/* Register Button */}
               <button
                 type="submit"
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
               >
-                Sign In
+                Sign Up
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="mt-6 flex items-center justify-center">
-              <span className="text-gray-400 text-sm">Or continue with</span>
-            </div>
-
-            {/* Social Buttons */}
-            <div className="mt-4 flex justify-center space-x-4">
-              <button className="flex items-center justify-center w-24 h-12 border border-gray-300 rounded-lg hover:bg-gray-100">
-                <FaGoogle className="text-500 text-xl" />
-              </button>
-              <button className="flex items-center justify-center w-24 h-12 border border-gray-300 rounded-lg hover:bg-gray-100">
-                <FaFacebook className="text-blue-600 text-xl" />
-              </button>
-            </div>
-
-            {/* Sign Up Link */}
             <p className="mt-6 text-center text-sm text-gray-600">
-              Don’t have an account?{" "}
-              <Link to="/register" className="text-blue-600 hover:text-blue-500 font-medium">
-                Sign up here
-              </Link>
+              Already have an account?{" "}
+              <a href="/" className="text-blue-600 hover:text-blue-500 font-medium">
+                Sign In
+              </a>
             </p>
           </div>
         </div>
@@ -170,4 +160,4 @@ const TaskLogin = () => {
   );
 };
 
-export default TaskLogin;
+export default TaskRegister;
